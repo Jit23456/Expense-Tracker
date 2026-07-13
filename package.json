@@ -1,0 +1,13 @@
+{
+  "name": "flowexpense",
+  "version": "1.0.0",
+  "private": true,
+  "description": "FlowExpense frontend build (TypeScript -> static/js)",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}

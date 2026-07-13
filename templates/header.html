@@ -1,0 +1,44 @@
+<header class="site-header glassmorphism">
+    <a href="{{ url_for('index') }}" class="site-brand" aria-label="FlowExpense home">
+        <span class="brand-icon">
+            <i class="fa-solid fa-wallet"></i>
+        </span>
+        <span class="brand-text">
+            <strong>FlowExpense</strong>
+            <small>Expense Portal</small>
+        </span>
+    </a>
+
+    <nav class="site-nav" aria-label="Primary navigation">
+        {% if current_user %}
+            <a href="{{ url_for('admin_page') if current_user.role == 'admin' else url_for('user_page') }}">
+                <i class="fa-solid fa-table-columns"></i> Dashboard
+            </a>
+        {% endif %}
+        <a href="{{ url_for('service_page') }}">
+            <i class="fa-solid fa-layer-group"></i> Services
+        </a>
+        <a href="{{ url_for('contact_page') }}">
+            <i class="fa-solid fa-envelope"></i> Contact
+        </a>
+    </nav>
+
+    <div class="site-actions">
+        {% if current_user %}
+            <span class="role-chip">
+                <i class="fa-solid fa-user-shield"></i>
+                {{ current_user.username }} - {{ current_user.role|title }}
+            </span>
+            <a href="{{ url_for('logout') }}" class="btn btn-secondary">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </a>
+        {% else %}
+            <a href="{{ url_for('login') }}" class="btn btn-secondary">
+                <i class="fa-solid fa-right-to-bracket"></i> Sign In
+            </a>
+            <a href="{{ url_for('register') }}" class="btn btn-primary">
+                <i class="fa-solid fa-user-plus"></i> Sign Up
+            </a>
+        {% endif %}
+    </div>
+</header>

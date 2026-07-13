@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services - FlowExpense</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        {% include 'header.html' %}
+
+        <main class="content-page">
+            <section class="page-hero glassmorphism">
+                <span class="section-kicker">Services</span>
+                <h1>Tools for tracking expenses with clear role access.</h1>
+                <p>FlowExpense keeps daily spending, summaries, and admin controls in one focused portal.</p>
+            </section>
+
+            <section class="service-grid">
+                <article class="service-card glassmorphism">
+                    <div class="service-icon">
+                        <i class="fa-solid fa-receipt"></i>
+                    </div>
+                    <h2>Expense Recording</h2>
+                    <p>Add transaction title, amount, category, date, and notes from the user or admin portal.</p>
+                </article>
+
+                <article class="service-card glassmorphism">
+                    <div class="service-icon">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+                    <h2>Category Reports</h2>
+                    <p>See total spending, item count, top category, and category-wise chart summaries.</p>
+                </article>
+
+                <article class="service-card glassmorphism">
+                    <div class="service-icon">
+                        <i class="fa-solid fa-filter"></i>
+                    </div>
+                    <h2>Search and Filters</h2>
+                    <p>Find transactions quickly using keyword search and category filtering.</p>
+                </article>
+
+                <article class="service-card glassmorphism">
+                    <div class="service-icon">
+                        <i class="fa-solid fa-user-lock"></i>
+                    </div>
+                    <h2>Admin Protection</h2>
+                    <p>Users can use the portal, while delete access and admin tools stay restricted to admins.</p>
+                </article>
+            </section>
+
+            <section class="page-cta glassmorphism">
+                <div>
+                    <span class="section-kicker">Portal Access</span>
+                    <h2>Open your dashboard</h2>
+                    <p>Login to continue with the role assigned to your account.</p>
+                </div>
+                <a href="{{ url_for('index') }}" class="btn btn-success">
+                    <i class="fa-solid fa-arrow-right"></i> Continue
+                </a>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

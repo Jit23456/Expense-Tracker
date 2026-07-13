@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title|default('Expense Tracker - Smart Financial Management') }}</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body data-can-delete="{{ 'true' if can_delete else 'false' }}">
+    <div class="app-container">
+        <!-- Sidebar Navigation / Brand -->
+        <header class="header">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>{{ portal_heading|default('FlowExpense') }}</h1>
+                    <p>{{ portal_subtitle|default('Smart Financial Tracker') }}</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <span class="role-chip">
+                    <i class="fa-solid fa-user-shield"></i>
+                    {{ current_user.username }} - {{ current_user.role|title }}
+                </span>
+                <a href="{{ url_for('service_page') }}" class="btn btn-secondary">
+                    <i class="fa-solid fa-layer-group"></i> Services
+                </a>
+                <a href="{{ url_for('contact_page') }}" class="btn btn-secondary">
+                    <i class="fa-solid fa-envelope"></i> Contact
+                </a>
+                <button id="quick-add-btn" class="btn btn-primary">
+                    <i class="fa-solid fa-plus"></i> Add Expense
+                </button>
+                <a href="{{ url_for('logout') }}" class="btn btn-secondary">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </a>
+            </div>
+        </header>
+
+        {% if can_delete %}
+        <section class="admin-tools glassmorphism">
+            <div>
+                <span class="section-kicker">Admin Access</span>
+                <h2>Manage portal transactions</h2>
+            </div>
+            <div class="admin-tool-list">
+                <span><i class="fa-solid fa-trash-can"></i> Delete expenses</span>
+                <span><i class="fa-solid fa-chart-line"></i> View all summaries</span>
+                <span><i class="fa-solid fa-lock"></i> Protected admin route</span>
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Metrics Overview Section -->
+        <section class="metrics-grid">
+            <div class="metric-card glassmorphism">
+                <div class="metric-icon total-spent-icon">
+                    <i class="fa-solid fa-indian-rupee-sign"></i>
+                </div>
+                <div class="metric-info">
+                    <span class="metric-label">Total Spent</span>
+                    <h2 id="metric-total-spent" class="metric-value">₹0.00</h2>
+                </div>
+            </div>
+
+            <div class="metric-card glassmorphism">
+                <div class="metric-icon total-count-icon">
+                    <i class="fa-solid fa-receipt"></i>
+                </div>
+                <div class="metric-info">
+                    <span class="metric-label">Total Items</span>
+                    <h2 id="metric-total-count" class="metric-value">0</h2>
+                </div>
+            </div>
+
+            <div class="metric-card glassmorphism">
+                <div class="metric-icon top-cat-icon">
+                    <i class="fa-solid fa-fire"></i>
+                </div>
+                <div class="metric-info">
+                    <span class="metric-label">Top Category</span>
+                    <h2 id="metric-top-category" class="metric-value">N/A</h2>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Workspace: Left Column (Form & Chart), Right Column (Transactions Table) -->
+        <div class="main-layout">
+            <!-- Left Column -->
+            <div class="left-column">
+                <!-- Add Expense Card -->
+                <div class="card glassmorphism" id="form-card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-circle-plus"></i> New Transaction</h3>
+                    </div>
+                    <form id="expense-form" class="expense-form">
+                        <div class="form-group">
+                            <label for="title">Expense Title</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-tag"></i>
+                                <input type="text" id="title" placeholder="e.g. Grocery shopping" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="amount">Amount (₹)</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-indian-rupee-sign"></i>
+                                    <input type="number" id="amount" step="0.01" min="0.01" placeholder="0.00" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="category">Category</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-layer-group"></i>
+                                    <select id="category" required>
+                                        <option value="Food & Dining">Food & Dining</option>
+                                        <option value="Transportation">Transportation</option>
+                                        <option value="Shopping">Shopping</option>
+                                        <option value="Bills & Utilities">Bills & Utilities</option>
+                                        <option value="Entertainment">Entertainment</option>
+                                        <option value="Healthcare">Healthcare</option>
+                                        <option value="General">General</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="date">Date</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-calendar-days"></i>
+                                <input type="date" id="date" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="notes">Notes (Optional)</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-note-sticky"></i>
+                                <input type="text" id="notes" placeholder="Additional details...">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success btn-block">
+                            <i class="fa-solid fa-check"></i> Save Expense
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Category Visualizer Chart Card -->
+                <div class="card glassmorphism margin-top">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-chart-pie"></i> Category Breakdown</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="categoryChart"></canvas>
+                        <div id="chart-empty-state" class="empty-chart-msg">
+                            <i class="fa-solid fa-chart-simple"></i>
+                            <p>No data to display. Add expenses to see analysis.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Transactions List -->
+            <div class="right-column">
+                <div class="card glassmorphism height-full">
+                    <div class="card-header flex-between">
+                        <h3><i class="fa-solid fa-list-check"></i> Transactions History</h3>
+                        <span class="badge-count" id="list-count-badge">0 items</span>
+                    </div>
+
+                    <!-- Filters and Search Bar -->
+                    <div class="toolbar">
+                        <div class="search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="search-input" placeholder="Search transactions...">
+                        </div>
+                        <div class="filter-box">
+                            <select id="filter-category">
+                                <option value="All">All Categories</option>
+                                <option value="Food & Dining">Food & Dining</option>
+                                <option value="Transportation">Transportation</option>
+                                <option value="Shopping">Shopping</option>
+                                <option value="Bills & Utilities">Bills & Utilities</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Healthcare">Healthcare</option>
+                                <option value="General">General</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Expenses List Container -->
+                    <div class="expenses-list-container">
+                        <ul id="expenses-list" class="expenses-list">
+                            <!-- Dynamic items injected via JavaScript -->
+                        </ul>
+                        <div id="empty-list-state" class="empty-state">
+                            <div class="empty-icon"><i class="fa-solid fa-box-open"></i></div>
+                            <h4>No Transactions Found</h4>
+                            <p>Get started by recording your first expense!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden">
+        <i class="toast-icon fa-solid fa-circle-info"></i>
+        <span id="toast-message">Notification message</span>
+    </div>
+
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
