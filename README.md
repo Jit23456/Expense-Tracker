@@ -105,12 +105,4 @@ All endpoints require a logged-in session.
 | `DELETE` | `/api/expenses/<id>` | admin | Delete an expense |
 | `GET` | `/api/summary` | user | Totals and category breakdown |
 
-## Deploying to cPanel
-
-1. Create a MySQL database and user in **MySQL® Databases**.
-2. Upload the project (without `venv/`, `node_modules/`, `.git/`) outside `public_html`.
-3. In **Setup Python App**: startup file `passenger_wsgi.py`, entry point `application`.
-4. Set the environment variables from the table above (real passwords and a random `FLASK_SECRET_KEY`).
-5. Run `pip install -r requirements.txt` in the app's virtualenv and restart.
-
 > ⚠️ Before hosting publicly: remove the demo credentials from the login page and consider restricting Admin self-registration.
